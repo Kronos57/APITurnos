@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="TurnosModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="comercios">
+          <Key>
+            <PropertyRef Name="id_comercio" />
+          </Key>
+          <Property Name="id_comercio" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="nom_comercio" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="aforo_maximo" Type="smallint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="servicios">
+          <Key>
+            <PropertyRef Name="id_servicio" />
+          </Key>
+          <Property Name="id_servicio" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id_comercio" Type="int" Nullable="false" />
+          <Property Name="nom_servicio" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="hora_apertura" Type="time" Precision="7" Nullable="false" />
+          <Property Name="hora_cierre" Type="time" Precision="7" Nullable="false" />
+          <Property Name="duracion" Type="smallint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="turnos">
+          <Key>
+            <PropertyRef Name="id_turno" />
+          </Key>
+          <Property Name="id_turno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id_servicio" Type="int" Nullable="false" />
+          <Property Name="fecha_turno" Type="date" Nullable="false" />
+          <Property Name="hora_inicio" Type="time" Precision="7" Nullable="false" />
+          <Property Name="hora_fin" Type="time" Precision="7" Nullable="false" />
+          <Property Name="estado" Type="bit" Nullable="false" />
+        </EntityType>
+        <Association Name="Fk_servicios_id_comercio">
+          <End Role="comercios" Type="Self.comercios" Multiplicity="1" />
+          <End Role="servicios" Type="Self.servicios" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="comercios">
+              <PropertyRef Name="id_comercio" />
+            </Principal>
+            <Dependent Role="servicios">
+              <PropertyRef Name="id_comercio" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Fk_turnos_id_servicio">
+          <End Role="servicios" Type="Self.servicios" Multiplicity="1" />
+          <End Role="turnos" Type="Self.turnos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="servicios">
+              <PropertyRef Name="id_servicio" />
+            </Principal>
+            <Dependent Role="turnos">
+              <PropertyRef Name="id_servicio" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="spGenerarTurnos" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="FechaInicio" Type="date" Mode="In" />
+          <Parameter Name="FechaFin" Type="date" Mode="In" />
+          <Parameter Name="IdServicio" Type="int" Mode="In" />
+        </Function>
+        <EntityContainer Name="TurnosModelStoreContainer">
+          <EntitySet Name="comercios" EntityType="Self.comercios" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="servicios" EntityType="Self.servicios" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="turnos" EntityType="Self.turnos" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="Fk_servicios_id_comercio" Association="Self.Fk_servicios_id_comercio">
+            <End Role="comercios" EntitySet="comercios" />
+            <End Role="servicios" EntitySet="servicios" />
+          </AssociationSet>
+          <AssociationSet Name="Fk_turnos_id_servicio" Association="Self.Fk_turnos_id_servicio">
+            <End Role="servicios" EntitySet="servicios" />
+            <End Role="turnos" EntitySet="turnos" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="TurnosModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="comercio">
+          <Key>
+            <PropertyRef Name="id_comercio" />
+          </Key>
+          <Property Name="id_comercio" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="nom_comercio" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="aforo_maximo" Type="Int16" Nullable="false" />
+          <NavigationProperty Name="servicios" Relationship="Self.Fk_servicios_id_comercio" FromRole="comercios" ToRole="servicios" />
+        </EntityType>
+        <EntityType Name="servicio">
+          <Key>
+            <PropertyRef Name="id_servicio" />
+          </Key>
+          <Property Name="id_servicio" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id_comercio" Type="Int32" Nullable="false" />
+          <Property Name="nom_servicio" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="hora_apertura" Type="Time" Nullable="false" Precision="7" />
+          <Property Name="hora_cierre" Type="Time" Nullable="false" Precision="7" />
+          <Property Name="duracion" Type="Int16" Nullable="false" />
+          <NavigationProperty Name="comercio" Relationship="Self.Fk_servicios_id_comercio" FromRole="servicios" ToRole="comercios" />
+          <NavigationProperty Name="turnos" Relationship="Self.Fk_turnos_id_servicio" FromRole="servicios" ToRole="turnos" />
+        </EntityType>
+        <EntityType Name="turno">
+          <Key>
+            <PropertyRef Name="id_turno" />
+          </Key>
+          <Property Name="id_turno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id_servicio" Type="Int32" Nullable="false" />
+          <Property Name="fecha_turno" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="hora_inicio" Type="Time" Nullable="false" Precision="7" />
+          <Property Name="hora_fin" Type="Time" Nullable="false" Precision="7" />
+          <Property Name="estado" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="servicio" Relationship="Self.Fk_turnos_id_servicio" FromRole="turnos" ToRole="servicios" />
+        </EntityType>
+        <Association Name="Fk_servicios_id_comercio">
+          <End Role="comercios" Type="Self.comercio" Multiplicity="1" />
+          <End Role="servicios" Type="Self.servicio" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="comercios">
+              <PropertyRef Name="id_comercio" />
+            </Principal>
+            <Dependent Role="servicios">
+              <PropertyRef Name="id_comercio" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Fk_turnos_id_servicio">
+          <End Role="servicios" Type="Self.servicio" Multiplicity="1" />
+          <End Role="turnos" Type="Self.turno" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="servicios">
+              <PropertyRef Name="id_servicio" />
+            </Principal>
+            <Dependent Role="turnos">
+              <PropertyRef Name="id_servicio" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="TurnosEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="comercios" EntityType="Self.comercio" />
+          <EntitySet Name="servicios" EntityType="Self.servicio" />
+          <EntitySet Name="turnos" EntityType="Self.turno" />
+          <AssociationSet Name="Fk_servicios_id_comercio" Association="Self.Fk_servicios_id_comercio">
+            <End Role="comercios" EntitySet="comercios" />
+            <End Role="servicios" EntitySet="servicios" />
+          </AssociationSet>
+          <AssociationSet Name="Fk_turnos_id_servicio" Association="Self.Fk_turnos_id_servicio">
+            <End Role="servicios" EntitySet="servicios" />
+            <End Role="turnos" EntitySet="turnos" />
+          </AssociationSet>
+          <FunctionImport Name="spGenerarTurnos" ReturnType="Collection(TurnosModel.spGenerarTurnos_Result)">
+            <Parameter Name="FechaInicio" Mode="In" Type="DateTime" />
+            <Parameter Name="FechaFin" Mode="In" Type="DateTime" />
+            <Parameter Name="IdServicio" Mode="In" Type="Int32" />
+          </FunctionImport>
+        </EntityContainer>
+        <ComplexType Name="spGenerarTurnos_Result">
+          <Property Type="Int32" Name="id_turno" Nullable="false" />
+          <Property Type="Int32" Name="id_servicio" Nullable="false" />
+          <Property Type="DateTime" Name="fecha_turno" Nullable="false" />
+          <Property Type="Time" Name="hora_inicio" Nullable="false" />
+          <Property Type="Time" Name="hora_fin" Nullable="false" />
+          <Property Type="String" Name="Estado" Nullable="false" MaxLength="10" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="TurnosModelStoreContainer" CdmEntityContainer="TurnosEntities">
+          <EntitySetMapping Name="comercios">
+            <EntityTypeMapping TypeName="TurnosModel.comercio">
+              <MappingFragment StoreEntitySet="comercios">
+                <ScalarProperty Name="id_comercio" ColumnName="id_comercio" />
+                <ScalarProperty Name="nom_comercio" ColumnName="nom_comercio" />
+                <ScalarProperty Name="aforo_maximo" ColumnName="aforo_maximo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="servicios">
+            <EntityTypeMapping TypeName="TurnosModel.servicio">
+              <MappingFragment StoreEntitySet="servicios">
+                <ScalarProperty Name="id_servicio" ColumnName="id_servicio" />
+                <ScalarProperty Name="id_comercio" ColumnName="id_comercio" />
+                <ScalarProperty Name="nom_servicio" ColumnName="nom_servicio" />
+                <ScalarProperty Name="hora_apertura" ColumnName="hora_apertura" />
+                <ScalarProperty Name="hora_cierre" ColumnName="hora_cierre" />
+                <ScalarProperty Name="duracion" ColumnName="duracion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="turnos">
+            <EntityTypeMapping TypeName="TurnosModel.turno">
+              <MappingFragment StoreEntitySet="turnos">
+                <ScalarProperty Name="id_turno" ColumnName="id_turno" />
+                <ScalarProperty Name="id_servicio" ColumnName="id_servicio" />
+                <ScalarProperty Name="fecha_turno" ColumnName="fecha_turno" />
+                <ScalarProperty Name="hora_inicio" ColumnName="hora_inicio" />
+                <ScalarProperty Name="hora_fin" ColumnName="hora_fin" />
+                <ScalarProperty Name="estado" ColumnName="estado" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="spGenerarTurnos" FunctionName="TurnosModel.Store.spGenerarTurnos">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="TurnosModel.spGenerarTurnos_Result">
+                <ScalarProperty Name="id_turno" ColumnName="id_turno" />
+                <ScalarProperty Name="id_servicio" ColumnName="id_servicio" />
+                <ScalarProperty Name="fecha_turno" ColumnName="fecha_turno" />
+                <ScalarProperty Name="hora_inicio" ColumnName="hora_inicio" />
+                <ScalarProperty Name="hora_fin" ColumnName="hora_fin" />
+                <ScalarProperty Name="Estado" ColumnName="Estado" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
